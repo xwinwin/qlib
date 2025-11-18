@@ -169,11 +169,13 @@ class GetData:
             # extract tar.gz file with strip-components=1 flag
             with tarfile.open(str(file_path.resolve()), "r:gz") as tf:
                 members = tf.getmembers()
+                logger.info(f"extracting ...")
                 for member in tqdm(members):
                     member.path = "/".join(member.path.split("/")[1:])  # strip-components=1
                     tf.extract(member, str(target_dir.resolve()))
         elif file_path.suffix == ".zip":
             with zipfile.ZipFile(str(file_path.resolve()), "r") as zp:
+                logger.info(f"extracting ...")
                 for _file in tqdm(zp.namelist()):
                     zp.extract(_file, str(target_dir.resolve()))
 
@@ -194,7 +196,7 @@ class GetData:
             if str(flag) not in ["Y", "y"]:
                 sys.exit()
             for _p in rm_dirs:
-                logger.warning(f"delete: {_p}")
+                logger.warning(f"deleting: {_p}")
                 shutil.rmtree(_p)
 
     def qlib_data(
@@ -255,4 +257,5 @@ class GetData:
         self.interval = interval
         self.region = region
 
+        logger.info("waiting to start ...")
         self.download_data(name.lower(), target_dir, delete_old, force_download)
